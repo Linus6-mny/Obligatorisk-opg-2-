@@ -20,7 +20,7 @@
     {
       $klassekode=$_klassekode ["klassekode"];
       $klassenavn=$_klassenavn ["klassenavn"];
-      $studiumkode=$_studiomkode["studiumkode"]
+      $studiumkode=$_studiomkode["studiumkode"];
 
       if (!$klassekode || !$klassenavn|| !$Studiomkode)
         {
