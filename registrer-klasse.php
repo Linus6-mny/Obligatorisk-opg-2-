@@ -15,6 +15,7 @@
   <input type="reset" value="Nullstill" id="nullstill" name="nullstill" /> <br />
 </form>
 
+
 <?php 
   if (isset($_POST ["registrerKlasseKnapp"]))
     {
