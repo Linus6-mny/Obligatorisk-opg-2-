@@ -20,9 +20,9 @@
     {
       $klassekode=$_klassekode ["klassekode"];
       $klassenavn=$_klassenavn ["klassenavn"];
-      $studiumkode=$_studiomkode["studiumkode"];
+      $studiumkode=$_studiomkode ["studiumkode"];
 
-      if (!$klassekode || !$klassenavn|| !$Studiomkode)
+      if (!$klassekode || !$klassenavn|| !$studiomkode)
         {
           print ("Alle felt m&aring; fylles ut");
         }
@@ -40,11 +40,13 @@
             }
           else
             {
-              $sqlSetning="INSERT INTO poststed VALUES('$postnr','$poststed');";
+              $sqlSetning="INSERT INTO klasse VALUES('$klassekode','$klassenavn','$studiumkode');";
               mysqli_query($db,$sqlSetning) or die ("ikke mulig &aring; registrere data i databasen");
                 /* SQL-setning sendt til database-serveren */
 
-              print ("F&oslash;lgende poststed er n&aring; registrert: $postnr $poststed"); 
+              print ("F&oslash;lgende poststed er n&aring; registrert: $klassekode, $klassenavn, $studiumkode");
+
+               
             }
         }
     }
