@@ -31,6 +31,6 @@ for ($r = 1; $r <= $antallRader; $r++) {
 }
 
 echo "</table>"; 
-?>
+
 
 ?>
