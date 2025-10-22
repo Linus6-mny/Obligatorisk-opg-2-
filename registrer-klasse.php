@@ -10,7 +10,7 @@
 <form method="post" action="" id="registrerKlasseSkjema" name="registrerKlasseSkjema">
   Klassekode <input type="text" id="klassekode" name="klassekode" required /> <br/>
    Klassenavn<input type="text" id="klassenavn" name="klassenavn" required /> <br/> 
-   Studiomkode<input type="text" id="studiomkode" name="studiomkode" required /> <br/>
+   Studiomkode<input type="text" id="studiumkode" name="studiumkode" required /> <br/>
   <input type="submit" value="Registrer klasse" id="registrerKlasseKnapp" name="registrerKlasseKnapp" /> 
   <input type="reset" value="Nullstill" id="nullstill" name="nullstill" /> <br />
 </form>
