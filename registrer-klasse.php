@@ -16,7 +16,7 @@
 </form>
 
 <?php 
-  if (isset($_POST ["registrerPoststedKnapp"]))
+  if (isset($_POST ["registrerKlasseKnapp"]))
     {
       $klassekode=$_klassekode ["klassekode"];
       $klassenavn=$_klassenavn ["klassenavn"];
