@@ -1,27 +1,36 @@
-<?php  /* vis-alle-poststeder */
-/*
-/*  Programmet skriver ut alle registrerte poststeder
-*/
-  include("db-tilkobling.php");  /* tilkobling til database-serveren utf�rt og valg av database foretatt */
+<?php  
+/* vis_alle_klasser.php */
+/* Viser alle registrerte klasser */
 
-  $sqlSetning="SELECT * FROM poststed;";
-  
-  $sqlResultat=mysqli_query($db,$sqlSetning) or die ("ikke mulig &aring; hente data fra databasen");
-    /* SQL-setning sendt til database-serveren */
-	
-  $antallRader=mysqli_num_rows($sqlResultat);  /* antall rader i resultatet beregnet */
+include("db-tilkobling.php");  // kobler til databasen
 
-  print ("<h3>Registrerte poststeder</h3>");
-  print ("<table border=1>");  
-  print ("<tr><th align=left>postnr</th> <th align=left>poststed</th></tr>"); 
+$sqlSetning = "SELECT * FROM klasse;";
+$sqlResultat = mysqli_query($db, $sqlSetning) or die("Ikke mulig å hente data fra databasen");
 
-  for ($r=1;$r<=$antallRader;$r++)
-    {
-      $rad=mysqli_fetch_array($sqlResultat);  /* ny rad hentet fra sp�rringsresultatet */
-      $postnr=$rad["postnr"];        /* ELLER $postnr=$rad[0]; */
-      $poststed=$rad["poststed"];    /* ELLER $poststed=$rad[1]; */
+$antallRader = mysqli_num_rows($sqlResultat);  // teller antall rader
 
-      print ("<tr> <td> $postnr </td> <td> $poststed </td> </tr>");
-    }
-  print ("</table>"); 
+echo "<h3>Registrerte klasser</h3>";
+echo "<table border='1'>";
+echo "<tr>
+        <th align='left'>Klassekode</th> 
+        <th align='left'>Klassenavn</th> 
+        <th align='left'>Studiumkode</th>
+      </tr>";
+
+for ($r = 1; $r <= $antallRader; $r++) {
+    $rad = mysqli_fetch_array($sqlResultat);
+    $klassekode = $rad["klassekode"];
+    $klassenavn = $rad["klassenavn"];
+    $studiumkode = $rad["studiumkode"];
+
+    echo "<tr> 
+            <td>$klassekode</td> 
+            <td>$klassenavn</td> 
+            <td>$studiumkode</td> 
+          </tr>";
+}
+
+echo "</table>"; 
+?>
+
 ?>
