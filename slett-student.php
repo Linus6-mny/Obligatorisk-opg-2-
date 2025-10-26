@@ -25,7 +25,7 @@
         }
       else
         {
-         include(__DIR__ . "/db-tilkobling.php");
+         include("db-tilkobling.php");
  /* tilkobling til database-serveren utført og valg av database foretatt */
 
           $sqlSetning="SELECT * FROM student WHERE student='$student';";
