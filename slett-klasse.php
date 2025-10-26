@@ -10,18 +10,18 @@
 <h3>Slett Klasse</h3>
 
 <form method="post" action="" id="slettklasseSkjema" name="slettklasseSkjema" onSubmit="return bekreft()">
-  Postnr <input type="text" id="postnr" name="postnr" required /> <br/>
+  Postnr <input type="text" id="klasse" name="klasse" required /> <br/>
   <input type="submit" value="Slett klasse" name="slettklasseKnapp" id="slettklasseKnapp" /> 
 </form>
 
 <?php
   if (isset($_POST ["slettklasseKnapp"]))
     {	
-      $postnr=$_POST ["postnr"];
+      $klasse=$_POST ["klasse"];
 	  
-	  if (!$postnr)
+	  if (!$klasse)
         {
-          print ("Postnr m&aring; fylles ut");
+          print ("klasse m&aring; fylles ut");
         }
       else
         {
