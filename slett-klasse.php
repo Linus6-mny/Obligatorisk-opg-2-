@@ -1,7 +1,7 @@
 <?php  /* slett-klasse */
 /*
-/*  Programmet lager et skjema for å velge et poststed som skal slettes  
-/*  Programmet sletter det valgte poststedet
+/*  Programmet lager et skjema for å velge et klasse som skal slettes  
+/*  Programmet sletter det valgte klasse
 */
 ?> 
 
@@ -10,7 +10,7 @@
 <h3>Slett Klasse</h3>
 
 <form method="post" action="" id="slettklasseSkjema" name="slettklasseSkjema" onSubmit="return bekreft()">
-  Postnr <input type="text" id="klasse" name="klasse" required /> <br/>
+  Klasse <input type="text" id="klasse" name="klasse" required /> <br/>
   <input type="submit" value="Slett klasse" name="slettklasseKnapp" id="slettklasseKnapp" /> 
 </form>
 
@@ -27,7 +27,7 @@
         {
           include("db-tilkobling.php");  /* tilkobling til database-serveren utført og valg av database foretatt */
 
-          $sqlSetning="SELECT * FROM klasse WHERE postnr='$postnr';";
+          $sqlSetning="SELECT * FROM klasse WHERE klasse='$klasse';";
           $sqlResultat=mysqli_query($db,$sqlSetning) or die ("ikke mulig &aring; hente data fra databasen");
           $antallRader=mysqli_num_rows($sqlResultat); 
 
@@ -37,11 +37,11 @@
             }
           else
             {	  
-              $sqlSetning="DELETE FROM klasse WHERE postnr='$postnr';";
+              $sqlSetning="DELETE FROM klasse WHERE klasse='$klasse';";
               mysqli_query($db,$sqlSetning) or die ("ikke mulig &aring; slette data i databasen");
                 /* SQL-setning sendt til database-serveren */
 		
-              print ("F&oslash;lgende klasse er n&aring; slettet: $postnr  <br />");
+              print ("F&oslash;lgende klasse er n&aring; slettet: $klasse  <br />");
             }
         }
     }
