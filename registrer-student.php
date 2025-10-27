@@ -1,4 +1,8 @@
 <?php 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
  /* registrer-poststed 
   Programmet lager et html-skjema for å registrere et poststed
   Programmet registrerer data (postnr og poststed) i databasen
@@ -19,6 +23,7 @@
 <?php 
   if (isset($_POST ["registrerStudentKnapp"]))
     {
+      echo "<p>Skjema mottatt – knappen fungerer!</p>";
       $brukernavn= $_POST["brukernavn"];
       $fornavn= $_POST ["fornavn"];
       $etternavn= $_POST ["etternavn"];
