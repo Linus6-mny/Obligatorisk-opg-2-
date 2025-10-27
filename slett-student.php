@@ -10,7 +10,7 @@
 <h3>Slett student</h3>
 
 <form method="post" action="" id="slettstudentSkjema" name="slettstudentSkjema" onSubmit="return bekreft()">
-  Klasse <input type="text" id="student" name="student" required /> <br/>
+  student <input type="text" id="student" name="student" required /> <br/>
   <input type="submit" value="Slett student" name="slettstudentKnapp" id="slettstudentKnapp" /> 
 </form>
 
