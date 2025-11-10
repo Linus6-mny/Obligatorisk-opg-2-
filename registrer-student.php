@@ -1,44 +1,80 @@
 <?php
-/* registrer-student.php
-   Lager et skjema for å registrere en student
-   Registrerer data i databasen
-*/
-?>
-
-<h3>Registrer student</h3>
-
-<form method="post" action="" id="registrerStudentSkjema" name="registrerStudentSkjema">
-  Brukernavn: <input type="text" id="brukernavn" name="brukernavn" required /> <br/>
-  Fornavn: <input type="text" id="fornavn" name="fornavn" required /> <br/>
-  Etternavn: <input type="text" id="etternavn" name="etternavn" required /> <br/>
-  Klassekode: <input type="text" id="klassekode" name="klassekode" required /> <br/>
-  
-  <input type="submit" value="Registrer student" id="registrerstudentKnapp" name="registrerstudentKnapp" /> 
-  <input type="reset" value="Nullstill" id="nullstill" name="nullstill" /> <br />
-</form>
-
-<?php
-if (isset($_POST["registrerstudentKnapp"])) {
-    $brukernavn = $_POST["brukernavn"];
-    $fornavn = $_POST["fornavn"];
-    $etternavn = $_POST["etternavn"];
-    $klassekode = $_POST["klassekode"];
-
-    if (!$brukernavn || !$fornavn || !$etternavn || !$klassekode) {
-        print("Alle felt må fylles ut.");
-    } else {
-        include("db-tilkobling.php");
-
-        $sql = "SELECT * FROM student WHERE brukernavn='$brukernavn';";
-        $resultat = mysqli_query($db, $sql) or die("Feil ved henting av data.");
-
-        if (mysqli_num_rows($resultat) != 0) {
-            print("Studenten finnes allerede.");
+include('db-tilkobling.php');
+$melding = '';
+$klasser = mysqli_query($db, "SELECT klassekode, klassenavn FROM klasse ORDER BY klassekode");
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $brukernavn = trim($_POST['brukernavn'] ?? '');
+    $fornavn = trim($_POST['fornavn'] ?? '');
+    $etternavn = trim($_POST['etternavn'] ?? '');
+    $klassekode = $_POST['klassekode'] ?? '';
+    if ($brukernavn !== '' && $fornavn !== '' && $etternavn !== '' && $klassekode !== '') {
+        $bn = mysqli_real_escape_string($db, strtolower($brukernavn));
+        $fn = mysqli_real_escape_string($db, $fornavn);
+        $en = mysqli_real_escape_string($db, $etternavn);
+        $kk = mysqli_real_escape_string($db, $klassekode);
+        $dupe = mysqli_query($db, "SELECT 1 FROM student WHERE brukernavn = '$bn'");
+        if ($dupe && mysqli_num_rows($dupe) > 0) {
+            $melding = 'Brukernavn er registrert fra før.';
         } else {
-            $sql = "INSERT INTO student VALUES('$brukernavn','$fornavn','$etternavn','$klassekode');";
-            mysqli_query($db, $sql) or die("Feil ved registrering.");
-            print("Studenten <strong>$brukernavn</strong> er nå registrert!");
+            $klasseOK = mysqli_query($db, "SELECT 1 FROM klasse WHERE klassekode = '$kk'");
+            if (!$klasseOK || mysqli_num_rows($klasseOK) === 0) {
+                $melding = 'Ugyldig klassekode.';
+            } else {
+                $sql = "INSERT INTO student (brukernavn, fornavn, etternavn, klassekode) VALUES ('$bn', '$fn', '$en', '$kk')";
+                if (mysqli_query($db, $sql)) {
+                    $melding = 'Student er registrert.';
+                } else {
+                    $melding = 'Feil: ' . mysqli_error($db);
+                }
+            }
         }
+    } else {
+        $melding = 'Fyll inn alle felt.';
     }
 }
 ?>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrer student</title>
+</head>
+<body>
+    <h1>Registrer student</h1>
+    <?php if ($melding !== ''): ?>
+        <p><?php echo htmlspecialchars($melding); ?></p>
+    <?php endif; ?>
+    <?php if ($klasser && mysqli_num_rows($klasser) > 0): ?>
+        <form method="post" action="">
+            <label>
+                Brukernavn
+                <input type="text" name="brukernavn" maxlength="7" required>
+            </label>
+            <br>
+            <label>
+                Fornavn
+                <input type="text" name="fornavn" maxlength="50" required>
+            </label>
+            <br>
+            <label>
+                Etternavn
+                <input type="text" name="etternavn" maxlength="50" required>
+            </label>
+            <br>
+            <label for="klassekode">Klassekode</label>
+            <select name="klassekode" id="klassekode" required>
+                <option value="">-- Velg klasse --</option>
+                <?php while ($rad = mysqli_fetch_assoc($klasser)): ?>
+                    <option value="<?php echo htmlspecialchars($rad['klassekode']); ?>">
+                        <?php echo htmlspecialchars($rad['klassekode'] . ' - ' . $rad['klassenavn']); ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+            <br>
+            <button type="submit">Registrer</button>
+        </form>
+    <?php else: ?>
+        <p>Registrer en klasse før du legger til studenter.</p>
+    <?php endif; ?>
+</body>
+</html>
