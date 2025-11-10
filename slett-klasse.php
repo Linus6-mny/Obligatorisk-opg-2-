@@ -1,48 +1,69 @@
-<?php  /* slett-klasse */
-/*
-/*  Programmet lager et skjema for å velge et klasse som skal slettes  
-/*  Programmet sletter det valgte klasse
-*/
-?> 
-
-<script src="funksjoner.js"> </script>
-
-<h3>Slett Klasse</h3>
-
-<form method="post" action="" id="slettklasseSkjema" name="slettklasseSkjema" onSubmit="return bekreft()">
-  Klasse <input type="text" id="klasse" name="klasse" required /> <br/>
-  <input type="submit" value="Slett klasse" name="slettklasseKnapp" id="slettklasseKnapp" /> 
-</form>
-
 <?php
-  if (isset($_POST ["slettklasseKnapp"]))
-    {	
-      $klasse=$_POST ["klasse"];
-	  
-	  if (!$klasse)
-        {
-          print ("klasse m&aring; fylles ut");
-        }
-      else
-        {
-          include("db-tilkobling.php");  /* tilkobling til database-serveren utført og valg av database foretatt */
-
-          $sqlSetning="SELECT * FROM klasse WHERE klassekode='$klasse';";
-          $sqlResultat=mysqli_query($db,$sqlSetning) or die ("ikke mulig &aring; hente data fra databasen");
-          $antallRader=mysqli_num_rows($sqlResultat); 
-
-          if ($antallRader==0)  /* klasse er ikke registrert */
-            {
-              print ("Klasse finnes ikke");
-            }
-          else
-            {	  
-              $sqlSetning="DELETE FROM klasse WHERE klassekode='$klasse';";
-              mysqli_query($db,$sqlSetning) or die ("ikke mulig &aring; slette data i databasen");
-                /* SQL-setning sendt til database-serveren */
-		
-              print ("F&oslash;lgende klasse er n&aring; slettet: $klasse  <br />");
+include('db-tilkobling.php');
+$melding = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $klassekode = $_POST['klassekode'] ?? '';
+    if ($klassekode !== '') {
+        $kode = mysqli_real_escape_string($db, $klassekode);
+        $finn = mysqli_query($db, "SELECT 1 FROM klasse WHERE klassekode = '$kode'");
+        if (!$finn || mysqli_num_rows($finn) === 0) {
+            $melding = 'Klassen finnes ikke.';
+        } else {
+            $cntRes = mysqli_query($db, "SELECT COUNT(*) AS c FROM student WHERE klassekode = '$kode'");
+            $rad = $cntRes ? mysqli_fetch_assoc($cntRes) : ['c' => 0];
+            if (!empty($rad['c']) && (int)$rad['c'] > 0) {
+                $melding = 'Kan ikke slette klasse med studenter i.';
+            } else {
+                $sql = "DELETE FROM klasse WHERE klassekode = '$kode'";
+                if (mysqli_query($db, $sql)) {
+                    if (mysqli_affected_rows($db) > 0) {
+                        $melding = 'Klasse er slettet.';
+                    } else {
+                        $melding = 'Fant ikke klassekode.';
+                    }
+                } else {
+                    $melding = 'Feil: ' . mysqli_error($db);
+                }
             }
         }
+    } else {
+        $melding = 'Velg en klasse.';
     }
-?> 
+}
+$klasser = mysqli_query($db, "SELECT klassekode FROM klasse ORDER BY klassekode");
+?>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <title>Slett klasse</title>
+    <script src="funksjoner.js"></script>
+    <script>
+      document.addEventListener('submit', function(e){
+        e.stopImmediatePropagation();
+        if (!bekreft()) { e.preventDefault(); }
+      }, true);
+    </script>
+</head>
+<body>
+    <h1>Slett klasse</h1>
+    <?php if ($melding !== ''): ?>
+        <p><?php echo htmlspecialchars($melding); ?></p>
+    <?php endif; ?>
+    <form method="post" action="" onsubmit="return confirm('Er du sikker pÃ¥ at du vil slette denne klassen?');">
+        <label for="klassekode">Klassekode</label>
+        <select name="klassekode" id="klassekode" required>
+            <option value="">-- Velg klasse --</option>
+            <?php if ($klasser): ?>
+                <?php while ($rad = mysqli_fetch_assoc($klasser)): ?>
+                    <option value="<?php echo htmlspecialchars($rad['klassekode']); ?>">
+                        <?php echo htmlspecialchars($rad['klassekode']); ?>
+                    </option>
+                <?php endwhile; ?>
+            <?php endif; ?>
+        </select>
+        <br>
+        <button type="submit">Slett</button>
+    </form>
+</body>
+</html>
