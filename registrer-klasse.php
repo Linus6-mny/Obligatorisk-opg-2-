@@ -1,54 +1,58 @@
-<?php 
- /* registrer-poststed 
-  Programmet lager et html-skjema for å registrere et poststed
-  Programmet registrerer data (postnr og poststed) i databasen
-*/
-?> 
-
-<h3>Registrer klasse </h3>
-
-<form method="post" action="" id="registrerKlasseSkjema" name="registrerKlasseSkjema">
-  Klassekode <input type="text" id="klassekode" name="klassekode" required /> <br/>
-   Klassenavn<input type="text" id="klassenavn" name="klassenavn" required /> <br/> 
-   Studiumkode<input type="text" id="studiumkode" name="studiumkode" required /> <br/>
-  <input type="submit" value="Registrer klasse" id="registrerKlasseKnapp" name="registrerKlasseKnapp" /> 
-  <input type="reset" value="Nullstill" id="nullstill" name="nullstill" /> <br />
-</form>
-
-
-<?php 
-  if (isset($_POST ["registrerKlasseKnapp"]))
-    {
-      $klassekode= $_POST["klassekode"];
-      $klassenavn= $_POST ["klassenavn"];
-      $studiumkode= $_POST ["studiumkode"];
-
-      if (!$klassekode || !$klassenavn|| !$studiumkode)
-        {
-          print ("Alle felt m&aring; fylles ut, klassekode, klassenavn og studiumkode m&aring; fylles ut");
-        }
-      else
-        {
-          include("db-tilkobling.php");  /* tilkobling til database-serveren utført og valg av database foretatt */
-
-          $sqlSetning="SELECT * FROM klasse WHERE klassekode='$klassekode';";
-          $sqlResultat=mysqli_query($db,$sqlSetning) or die ("ikke mulig &aring; hente data fra databasen");
-          $antallRader=mysqli_num_rows($sqlResultat); 
-
-          if ($antallRader!=0)  /* poststedet er registrert fra før */
-            {
-              print ("Klasse er registrert fra f&oslashr");
-            }
-          else
-            {
-              $sqlSetning="INSERT INTO klasse VALUES('$klassekode','$klassenavn','$studiumkode');";
-              mysqli_query($db,$sqlSetning) or die ("ikke mulig &aring; registrere data i databasen");
-                /* SQL-setning sendt til database-serveren */
-
-              print ("F&oslash;lgende poststed er n&aring; registrert: $klassekode, $klassenavn, $studiumkode");
-
-               
+<?php
+include('db-tilkobling.php');
+$melding = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $klassekode = trim($_POST['klassekode'] ?? '');
+    $klassenavn = trim($_POST['klassenavn'] ?? '');
+    $studiumkode = trim($_POST['studiumkode'] ?? '');
+    if ($klassekode !== '' && $klassenavn !== '' && $studiumkode !== '') {
+        $kode = mysqli_real_escape_string($db, $klassekode);
+        $navn = mysqli_real_escape_string($db, $klassenavn);
+        $studium = mysqli_real_escape_string($db, $studiumkode);
+        $dupes = mysqli_query($db, "SELECT 1 FROM klasse WHERE klassekode = '$kode'");
+        if ($dupes && mysqli_num_rows($dupes) > 0) {
+            $melding = 'Klassekode er registrert fra før.';
+        } else {
+            $sql = "INSERT INTO klasse (klassekode, klassenavn, studiumkode) VALUES ('$kode', '$navn', '$studium')";
+            if (mysqli_query($db, $sql)) {
+                $melding = 'Klasse er registrert.';
+            } else {
+                $melding = 'Feil: ' . mysqli_error($db);
             }
         }
+    } else {
+        $melding = 'Fyll inn alle felt.';
     }
-?> 
+}
+?>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrer klasse</title>
+</head>
+<body>
+    <h1>Registrer klasse</h1>
+    <?php if ($melding !== ''): ?>
+        <p><?php echo htmlspecialchars($melding); ?></p>
+    <?php endif; ?>
+    <form method="post" action="">
+        <label>
+            Klassekode
+            <input type="text" name="klassekode" maxlength="5" required>
+        </label>
+        <br>
+        <label>
+            Klassenavn
+            <input type="text" name="klassenavn" maxlength="50" required>
+        </label>
+        <br>
+        <label>
+            Studiumkode
+            <input type="text" name="studiumkode" maxlength="50" required>
+        </label>
+        <br>
+        <button type="submit">Registrer</button>
+    </form>
+</body>
+</html>

@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <br>
             <label for="klassekode">Klassekode</label>
             <select name="klassekode" id="klassekode" required>
-                <option value="">-- Velg klasse --</option>
+                <option value=""> Velg klasse </option>
                 <?php while ($rad = mysqli_fetch_assoc($klasser)): ?>
                     <option value="<?php echo htmlspecialchars($rad['klassekode']); ?>">
                         <?php echo htmlspecialchars($rad['klassekode'] . ' - ' . $rad['klassenavn']); ?>
